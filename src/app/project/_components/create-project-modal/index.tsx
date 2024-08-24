@@ -1,19 +1,11 @@
 "use client";
 import { Button } from "@/components/atoms/button";
 import { Box, Dialog, DialogContent, DialogTitle } from "@mui/material";
-import { useCallback, useState } from "react";
 import { CreateProjectForm } from "../create-project-form";
+import { useModal } from "@/hooks/useModal";
 
 export const CreateProjectButton: React.FC = () => {
-  const [open, setOpen] = useState(false);
-
-  const onOpen = useCallback(() => {
-    setOpen(true);
-  }, []);
-
-  const onClose = useCallback(() => {
-    setOpen(false);
-  }, []);
+  const { open, onOpen, onClose } = useModal();
   return (
     <>
       <Button onClick={onOpen} variant="outlined">

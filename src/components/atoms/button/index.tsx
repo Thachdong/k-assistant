@@ -10,7 +10,7 @@ export const Button: React.FC<TButtonProps> = ({
   ...rest
 }) => {
   return (
-    <BsButton {...rest} disabled={loading}>
+    <BsButton disabled={loading} {...rest}>
       {loading ? "loading ..." : children}
     </BsButton>
   );

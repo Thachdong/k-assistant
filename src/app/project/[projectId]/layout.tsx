@@ -14,16 +14,16 @@ export default async function ProjectDetailLayout({
   params,
 }: TProps) {
   return (
-    <Grid container>
+    <Grid container className="h-screen overflow-hidden">
       <Grid item xs={12}>
         <Header projectId={params.projectId} />
       </Grid>
 
-      <Grid item xs={2}>
+      <Grid item xs={2} className="h-[calc(100vh-68px)]">
         <Sidebar />
       </Grid>
 
-      <Grid item xs={10}>
+      <Grid item xs={10} className="h-[calc(100vh-68px)]">
         {children}
       </Grid>
     </Grid>

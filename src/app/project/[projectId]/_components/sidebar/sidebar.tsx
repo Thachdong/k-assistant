@@ -22,22 +22,34 @@ const menu: TMenuItem[] = [
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const { projectId } = useParams();
-  
-  const renderMenu = useCallback((menu: TMenuItem) => {
-    const itemPath = `/project/${projectId}${menu.path}`;
 
-    let className = "h-[57px]";
+  const renderMenu = useCallback(
+    (menu: TMenuItem) => {
+      const itemPath = `/project/${projectId}${menu.path}`;
 
-    if (pathname === itemPath) {
-      className = `${className} !bg-gray-300`;
-    }
+      let className = "w-full h-[57px]";
 
-    return (
-      <MenuItem className={className} key={menu.id}>
-        <Link className="w-full" href={itemPath}>{menu.label}</Link>
-      </MenuItem>
-    );
-  }, [pathname, projectId]);
-  
-  return <MenuList className="h-screen border-r p-0">{menu.map(renderMenu)}</MenuList>;
+      if (pathname === itemPath) {
+        className = `${className} !bg-gray-300`;
+      }
+
+      return (
+        <MenuItem
+          className={className}
+          component={Link}
+          href={itemPath}
+          key={menu.id}
+        >
+          {menu.label}
+        </MenuItem>
+      );
+    },
+    [pathname, projectId]
+  );
+
+  return (
+    <MenuList className="h-screen border-r p-0">
+      {menu.map(renderMenu)}
+    </MenuList>
+  );
 };

@@ -11,7 +11,7 @@ export async function Header({ projectId }: TProps) {
   const projectDetail = await projectRepository.getById(projectId);
 
   return (
-    <Stack spacing={2} direction="row" className="border-b p-4">
+    <Stack spacing={2} direction="row" className="items-center border-b p-4">
       <Box className="w-1/4 border-r">
         <Link href="/project">
           <Button>

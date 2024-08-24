@@ -30,8 +30,6 @@ export const CreateProjectForm: React.FC<TProps> = ({ onClose }) => {
     onClose();
   }, [])
 
-  console.log('formState', formState);
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack

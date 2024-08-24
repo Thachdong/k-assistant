@@ -25,3 +25,70 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model Spec {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  file        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum EStatus {
+  PENDING
+  PROCESSING
+  SUCCESS
+  FAILED
+}
+
+model Testcase {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  file        String?
+  specId      String
+  status      EStatus  @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Design {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  file        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum ERoles {
+  USER
+  SYSTEM
+}
+
+model Chat {
+  id        String   @id @default(cuid())
+  message   String
+  role      ERoles
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ECompletionType {
+  ADD_COMPONENT
+  REFACTOR_COMPONENT
+  ADD_UNIT_TEST
+  ADD_STORYBOOK
+}
+
+model ChatCompletion {
+  id            String         @id @default(cuid())
+  type          ECompletionType
+  prompt        String
+  answer        String
+  componentName String?
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}

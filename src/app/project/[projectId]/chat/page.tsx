@@ -1,3 +1,7 @@
+import { chatRepository } from "@/database/repositories/chat-repository";
+import { ChatPanel } from "./_components/chat-panel";
+
 export default async function ChatPage() {
-    return <div>Chat page</div>
+  const chatHistory = await chatRepository.getAll();
+  return <ChatPanel chatHistory={chatHistory} />;
 }

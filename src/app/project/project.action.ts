@@ -5,6 +5,7 @@ import { getRepoInfo, getRepoTree } from "../../utils/github.util";
 import { IActionResponse } from "@/types/global-action.type";
 import { projectRepository } from "@/database/repositories/project-repository";
 import { Project } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 async function getSourceTree(credential: TGithubCredential): Promise<string> {
   const repoInfo = await getRepoInfo(credential);
@@ -48,6 +49,8 @@ export async function createProjectAction(
 export async function getAllProjectAction(): Promise<IActionResponse<Project[] | string>> {
   try {
     const projects = await projectRepository.getAll();
+
+    revalidatePath("/project");
 
     return {
       success: true,

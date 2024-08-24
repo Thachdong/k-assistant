@@ -1,28 +1,17 @@
 version: "3"
 
 services:
-  next-app:
-    container_name: next-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    # Set environment variables directly in the docker-compose file
-    environment:
-      ENV_VARIABLE: ${ENV_VARIABLE}
-      NEXT_PUBLIC_ENV_VARIABLE: ${NEXT_PUBLIC_ENV_VARIABLE}
-
-    # Set environment variables based on the .env file
-    env_file:
-      - .env.local
-    volumes:
-      - ./src:/app/src
-      - ./public:/app/public
-    restart: always
+  # Redis service
+  redis:
+    container_name: redis_container
+    image: redis:alpine
     ports:
-      - 3000:3000
+      - "6379:6379"
+    networks:
+      - redis_network
+    restart: unless-stopped
 
-  # Add more containers below (nginx, postgres, etc.)
+  # Postgres service
   postgres:
     container_name: postgres_container
     image: postgres
@@ -37,6 +26,7 @@ services:
       - postgres
     restart: unless-stopped
 
+  # pgAdmin service
   pgadmin:
     container_name: pgadmin_container
     image: dpage/pgadmin4
@@ -45,7 +35,6 @@ services:
       - .env.local
     volumes:
       - pgadmin:/var/lib/pgadmin
-
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     networks:
@@ -54,6 +43,8 @@ services:
 
 networks:
   postgres:
+    driver: bridge
+  redis_network:
     driver: bridge
 
 volumes:

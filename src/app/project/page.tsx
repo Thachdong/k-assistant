@@ -1,10 +1,6 @@
-import { Button } from "@/components/atoms/button";
 import { Box, Stack, Typography } from "@mui/material";
-import { useState } from "react";
 import { CreateProjectButton } from "./_components/create-project-modal";
-import { getAllProjectAction } from "./project.action";
 import { ProjectTable } from "./_components/project-table";
-import { Project } from "@prisma/client";
 import { projectRepository } from "@/database/repositories/project-repository";
 
 export default async function ProjectPage() {
