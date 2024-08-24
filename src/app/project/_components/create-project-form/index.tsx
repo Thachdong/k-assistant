@@ -13,11 +13,6 @@ type TProps = {
   onClose: () => void;
 };
 
-// const author = "Thachdong";
-// const token = "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";
-// const repo = "ESTI_V2";
-// const branch = "main";
-
 export const CreateProjectForm: React.FC<TProps> = ({ onClose }) => {
   const { control, handleSubmit, formState } = useForm<TCreateProjectForm>({
     resolver: yupResolver(createProjectSchema),
