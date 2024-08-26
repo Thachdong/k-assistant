@@ -13,13 +13,17 @@ import { addComponentSchema } from "../../../add-component.schema";
 import { useFile } from "@/hooks/useFile";
 import { Button } from "@/components/atoms/button";
 import { FormSelect } from "@/components/molecules/form-select";
+import { toBase64 } from "@/utils/client.util";
 
 type TProps = {
-  onComponent: (data: FormData) => Promise<void>
+  onComponent: (data: FormData) => Promise<void>;
   sourceCode: string;
 };
 
-export const AddComponentBtn: React.FC<TProps> = ({ sourceCode, onComponent }) => {
+export const AddComponentBtn: React.FC<TProps> = ({
+  sourceCode,
+  onComponent,
+}) => {
   const { control, handleSubmit } = useForm<TAddComponent>({
     resolver: yupResolver(addComponentSchema),
     defaultValues: {
@@ -32,19 +36,21 @@ export const AddComponentBtn: React.FC<TProps> = ({ sourceCode, onComponent }) =
   const { file, onFileChange } = useFile();
 
   const onSubmit = useCallback(
-    (formState: TAddComponent) => {
+    async(formState: TAddComponent) => {
       if (file) {
         const formData = new FormData();
 
-        formData.append('design', file);
+        formData.append("design", file);
 
-        formData.append('componentName', formState.componentName);
+        formData.append("componentName", formState.componentName);
 
-        formData.append('content', formState.content);
+        formData.append("content", formState.content);
 
-        formData.append('dependencies', JSON.stringify(formState.dependencies));
+        formData.append("dependencies", JSON.stringify(formState.dependencies));
 
         onComponent(formData);
+
+        onClose();
       }
     },
     [file, onComponent]
