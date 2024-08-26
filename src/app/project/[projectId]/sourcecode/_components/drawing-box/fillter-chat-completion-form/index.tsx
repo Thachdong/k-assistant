@@ -45,7 +45,7 @@ export const FillterChatCompletionForm: React.FC<TProps> = ({
   return (
     <Box
       sx={{ width: containerWidth }}
-      className="fixed bg-white shadow-md rounded z-10 top-0 p-4"
+      className="fixed bg-white shadow-md rounded z-10 top-0 right-0 p-4"
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Stack direction="row" alignItems="center" gap={3}>

@@ -99,7 +99,9 @@ function promptGeenrator(prompt: string) {
         7. Code Comments: Check for missing or outdated comments in the code.
         8. Documentation: Update the code documentation to reflect any changes made during the refactoring process.
 
-    - validate each considerations in range of 1 - 10, only recomment changes if it >= 8
+    - Because updating the code take a lot effort, please evaluate carefully before making suggestion
+
+    - validate each considerations in range of 1 - 10, highlight if each one <= 7
 
     - Respone split into 2 parts: 
         1. Summary of changes made
@@ -112,7 +114,7 @@ export async function POST(request: Request) {
 
   const stream = await ollama.generate({
     model: "llama3.1",
-    prompt: `Please reference package.json file: ${packagejson} to refactor sourcecode: ${prompt}`,
+    prompt: promptGeenrator(prompt),
     system: systemPrompt,
     stream: true,
     options: {
