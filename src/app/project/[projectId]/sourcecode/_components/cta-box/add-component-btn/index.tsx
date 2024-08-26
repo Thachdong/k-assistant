@@ -8,12 +8,11 @@ import { FormInput } from "@/components/molecules/form-input";
 import { UploadButton } from "@/components/atoms/upload-button";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 
-import { TAddComponent } from "../../../add-component.type";
-import { addComponentSchema } from "../../../add-component.schema";
+import { addComponentSchema } from "../../../sourcecode.schema";
 import { useFile } from "@/hooks/useFile";
 import { Button } from "@/components/atoms/button";
 import { FormSelect } from "@/components/molecules/form-select";
-import { toBase64 } from "@/utils/client.util";
+import { TAddComponent } from "../../../sourcecode.type";
 
 type TProps = {
   onComponent: (data: FormData) => Promise<void>;
