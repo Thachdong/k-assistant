@@ -7,8 +7,8 @@ import { useMemo } from "react";
 import "./index.scss";
 import { FileContent } from "../file-content";
 import { useFileContent } from "../../hooks/useFileContent";
-import { FileContentSkeleton } from "../file-content-skeleton";
-import { CtaButtons } from "../cta-buttons";
+import { FileContentSkeleton } from "../drawing-box/file-content-skeleton";
+import { CtaButtons } from "../cta-box/cta-buttons";
 
 type TProps = {
   projectDetail: Project;
@@ -40,7 +40,7 @@ export const SourceCode: React.FC<TProps> = ({
       <Grid item xs={10} className="overflow-auto h-full no-scrollbar">
         {contentBox}
 
-        <CtaButtons filePath={filePath} fileContent={fileContent} chatCompletions={chatCompletions} />
+        <CtaButtons filePath={filePath} fileContent={fileContent} chatCompletions={chatCompletions} sourceCode={sourceCode} />
       </Grid>
     </Grid>
   );

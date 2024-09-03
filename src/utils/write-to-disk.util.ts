@@ -1,5 +1,3 @@
-// src/app/actions.js or src/app/actions.ts
-
 import { writeFile } from "fs/promises";
 import { join } from "path";
 
