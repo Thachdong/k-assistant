@@ -46,6 +46,8 @@ export async function POST(request: Request) {
     formData.entries()
   );
 
+  const listDependencies = JSON.parse(dependencies as string);
+
   const arrayBuffer = await (design as File).arrayBuffer();
 
   const uint8Array = new Uint8Array(arrayBuffer);

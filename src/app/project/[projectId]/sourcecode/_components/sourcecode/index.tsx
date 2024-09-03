@@ -21,8 +21,7 @@ export const SourceCode: React.FC<TProps> = ({
 }) => {
   const { sourceCode } = projectDetail;
 
-  const { loading, fileContent, onSelectFile, filePath } =
-    useFileContent(projectDetail);
+  const { loading, fileContent, onSelectFile, filePath } = useFileContent(projectDetail);
 
   const contentBox = useMemo(() => {
     if (loading) {
@@ -41,13 +40,7 @@ export const SourceCode: React.FC<TProps> = ({
       <Grid item xs={10} className="overflow-auto h-full no-scrollbar">
         {contentBox}
 
-        <CtaButtons
-          filePath={filePath}
-          fileContent={fileContent}
-          chatCompletions={chatCompletions}
-          sourceCode={sourceCode}
-          projectDetail={projectDetail}
-        />
+        <CtaButtons filePath={filePath} fileContent={fileContent} chatCompletions={chatCompletions} sourceCode={sourceCode} />
       </Grid>
     </Grid>
   );
