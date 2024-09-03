@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import { useModal } from "@/hooks/useModal";
 import { Dialog, Stack, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -13,16 +13,19 @@ import { useFile } from "@/hooks/useFile";
 import { Button } from "@/components/atoms/button";
 import { FormSelect } from "@/components/molecules/form-select";
 import { TAddComponent } from "../../../sourcecode.type";
+import { ProjectContext } from "@/app/project/[projectId]/_context";
 
 type TProps = {
   onComponent: (data: FormData) => Promise<void>;
-  sourceCode: string;
 };
 
 export const AddComponentBtn: React.FC<TProps> = ({
-  sourceCode,
   onComponent,
 }) => {
+  const { project } = useContext(ProjectContext);
+
+  const { sourceCode = ''} = project || {};
+
   const { control, handleSubmit } = useForm<TAddComponent>({
     resolver: yupResolver(addComponentSchema),
     defaultValues: {

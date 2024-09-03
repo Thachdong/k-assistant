@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { convertToRCTreeData } from "../../sourcecode.utils";
 import Tree from "rc-tree";
 import { Box } from "@mui/material";
+import { ProjectContext } from "../../../_context";
 
-type TProps = {
-  sourceCode: string;
-  onSelect: (path: string) => void;
-};
+export const SourceTree: React.FC = () => {
+  const { project, getSelectedFile } = useContext(ProjectContext);
 
-export const SourceTree: React.FC<TProps> = ({ sourceCode, onSelect }) => {
+  const { sourceCode } = project || {};
+
   const treeData = useMemo(() => {
     if (!sourceCode) return [];
 
@@ -29,9 +29,9 @@ export const SourceTree: React.FC<TProps> = ({ sourceCode, onSelect }) => {
       <Tree
         treeData={treeData}
         onSelect={(_, info) => {
-            const path = info.node?.data?.path ?? '';
+          const path = info.node?.data?.path ?? "";
 
-          onSelect(path);
+          getSelectedFile?.(path, true);
         }}
         selectable
       />

@@ -2,7 +2,7 @@ import { getRepoFileContent } from "@/utils/github.util";
 import { Project } from "@prisma/client";
 import { useCallback, useEffect, useState } from "react";
 
-export const useFileContent = (projectDetail : Project) => {
+export const useFileContent = (projectDetail : Project | null) => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [fileContent, setFileContent] = useState<string>("No file selected");
@@ -15,7 +15,7 @@ export const useFileContent = (projectDetail : Project) => {
 
   useEffect(() => {
     (async () => {
-      if (!filePath) return "";
+      if (!filePath || !projectDetail) return "";
 
       const credential = {
         owner: projectDetail.repoOwner,

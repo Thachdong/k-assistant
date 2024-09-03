@@ -1,14 +1,15 @@
 import { TModal } from "@/hooks/useModal";
-import { Box, Button, Chip, Drawer, Stack, Typography } from "@mui/material";
-import { ChatCompletion } from "@prisma/client";
-import { ReactNode, useCallback, useMemo, useState } from "react";
+import { Box, Chip, Drawer, Stack, Typography } from "@mui/material";
+import { ChatCompletion, ECompletionType } from "@prisma/client";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Resizable, ResizeCallback } from "re-resizable";
 import { FillterChatCompletionForm } from "../fillter-chat-completion-form";
+import { getChatCompletionAction } from "../../../sourcecode.action";
+import { useSearchParams } from "next/navigation";
 
 type TProps = {
-  chatCompletions: ChatCompletion[];
   children?: ReactNode;
   drawerModal: TModal;
   chatCompletionContainerRef: React.RefObject<HTMLDivElement>
@@ -28,7 +29,6 @@ const defautSettings: TSettings = {
 };
 
 export const CompletionList: React.FC<TProps> = ({
-  chatCompletions,
   drawerModal,
   children,
   chatCompletionContainerRef
@@ -39,6 +39,15 @@ export const CompletionList: React.FC<TProps> = ({
     TCompletionCardSettings[]
   >([]);
 
+  const [completions, setCompletions] = useState<ChatCompletion[]>([]);
+
+  const searchParams = useSearchParams();
+
+  const searchTerms = searchParams.get('searchTerms') || '';
+
+  const type = searchParams.get('type') as ECompletionType;
+
+  // #region -- callbacks
   const handleCollapse = useCallback(
     (id: string) => {
       const index = completionCardSettings.findIndex((item) => item.id === id);
@@ -71,16 +80,6 @@ export const CompletionList: React.FC<TProps> = ({
     },
     [completionCardSettings]
   );
-
-  const emptyCompletion = useMemo(() => {
-    if (chatCompletions.length === 0) {
-      return (
-        <Box className="text-center p-3">
-          <Typography>No completions found</Typography>
-        </Box>
-      );
-    }
-  }, [chatCompletions]);
 
   const renderChatCompletion = useCallback(
     (chatCompletion: ChatCompletion) => {
@@ -134,7 +133,31 @@ export const CompletionList: React.FC<TProps> = ({
 
     setSettings((prev) => ({ ...prev, width }));
   }, []);
+  // #endregion
 
+  // #region -- memos
+  const emptyCompletion = useMemo(() => {
+    if (completions.length === 0) {
+      return (
+        <Box className="text-center p-3">
+          <Typography>No completions found</Typography>
+        </Box>
+      );
+    }
+  }, [completions]);
+  // #endregion
+
+  // #region -- side effects
+  useEffect(() => {
+    (async() => {
+      const result = await getChatCompletionAction(searchTerms, type ?? undefined);
+
+      if (result.success) [
+        setCompletions(result.data as ChatCompletion [])
+      ]
+    })();
+  }, [])
+  // #endregion
   return (
     <Drawer
       open={drawerModal.open}
@@ -151,7 +174,7 @@ export const CompletionList: React.FC<TProps> = ({
 
           {emptyCompletion}
 
-          {chatCompletions.map(renderChatCompletion)}
+          {completions.map(renderChatCompletion)}
 
           {children}
           {/* scroll to bottom target */}

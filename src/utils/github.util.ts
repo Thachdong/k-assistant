@@ -1,3 +1,4 @@
+"use client"
 import { TGithubCredential } from "@/types/github-credential";
 import axios from "axios";
 
