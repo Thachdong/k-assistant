@@ -1,7 +1,7 @@
 import * as xlsx from "xlsx";
 import fs from "fs";
-import { generateTestCasesPrompt } from "./prompts";
 import ollama from "ollama";
+import { generateTestcasesPrompts } from "@/prompts/generate-testcases.prompt";
 
 const { readFile, set_fs, utils } = xlsx;
 set_fs(fs);
@@ -38,7 +38,7 @@ export async function generateTestCasesService(specsPath: string): Promise<strin
     let result: any[] = [];
 
   for (const doc of docs) {
-    const prompt = generateTestCasesPrompt.promptGenerator(doc);
+    const prompt = generateTestcasesPrompts.userPrompt(doc);
 
     const { response } = await ollama.generate({
       model: "llama3.1",
@@ -46,7 +46,7 @@ export async function generateTestCasesService(specsPath: string): Promise<strin
       options: {
         temperature: 1,
       },
-      system: generateTestCasesPrompt.systemPrompt,
+      system: generateTestcasesPrompts.systemPrompt(),
       stream: false,
     });
 
