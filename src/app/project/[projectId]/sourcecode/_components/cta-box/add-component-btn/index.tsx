@@ -13,15 +13,19 @@ import { useFile } from "@/hooks/useFile";
 import { Button } from "@/components/atoms/button";
 import { FormSelect } from "@/components/molecules/form-select";
 import { TAddComponent } from "../../../sourcecode.type";
+import { Project } from "@prisma/client";
+import { getRepoFileContent } from "@/utils/github.util";
 
 type TProps = {
   onComponent: (data: FormData) => Promise<void>;
   sourceCode: string;
+  projectDetail: Project;
 };
 
 export const AddComponentBtn: React.FC<TProps> = ({
   sourceCode,
   onComponent,
+  projectDetail,
 }) => {
   const { control, handleSubmit } = useForm<TAddComponent>({
     resolver: yupResolver(addComponentSchema),
@@ -34,8 +38,25 @@ export const AddComponentBtn: React.FC<TProps> = ({
 
   const { file, onFileChange } = useFile();
 
+  const getFileContent = async (filePath: string) => {
+    if (!filePath) return "";
+
+    const credential = {
+      owner: projectDetail.repoOwner,
+      repo: projectDetail.repoName,
+      branch: projectDetail.repoBranch,
+      token: projectDetail.repoToken,
+    };
+
+    try {
+      return await getRepoFileContent(credential, filePath);
+    } catch {
+      return "";
+    }
+  };
+
   const onSubmit = useCallback(
-    async(formState: TAddComponent) => {
+    async (formState: TAddComponent) => {
       if (file) {
         const formData = new FormData();
 
@@ -45,7 +66,18 @@ export const AddComponentBtn: React.FC<TProps> = ({
 
         formData.append("content", formState.content);
 
-        formData.append("dependencies", JSON.stringify(formState.dependencies));
+        const dependencies = await Promise.all(
+          formState.dependencies?.map(async (d) => {
+            const content = await getFileContent(d);
+
+            return {
+              filePath: d,
+              fileContent: content,
+            };
+          }) || []
+        );
+
+        formData.append("dependencies", JSON.stringify(dependencies));
 
         onComponent(formData);
 
@@ -67,7 +99,7 @@ export const AddComponentBtn: React.FC<TProps> = ({
 
       return components.map((file: any) => ({
         value: file.path,
-        label: file.path.split("/").slice(-1),
+        label: file.path.split("components/")[1],
       }));
     } catch (error) {
       console.error(error);

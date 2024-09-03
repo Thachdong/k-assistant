@@ -59,8 +59,6 @@ export async function generateTestCasesService(specsPath: string): Promise<strin
       
       result = [...result, {error, data: response}];
     }
-
-    break;
   }
 
   const indexedTestCases = result.map((r, i) => ({no: i + 1, ...r}));

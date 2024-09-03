@@ -7,11 +7,12 @@ import {
   SpeedDial,
   Box,
   Typography,
+  Stack,
 } from "@mui/material";
 import UpdateIcon from "@mui/icons-material/Update";
 import OpenWithIcon from "@mui/icons-material/OpenWith";
 import StyleIcon from "@mui/icons-material/Style";
-import { ChatCompletion } from "@prisma/client";
+import { ChatCompletion, Project } from "@prisma/client";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -28,6 +29,7 @@ type TProps = {
   fileContent: string;
   chatCompletions: ChatCompletion[];
   sourceCode: string;
+  projectDetail: Project;
 };
 
 export const CtaButtons: React.FC<TProps> = ({
@@ -35,6 +37,7 @@ export const CtaButtons: React.FC<TProps> = ({
   fileContent,
   chatCompletions,
   sourceCode,
+  projectDetail,
 }) => {
   const chatCompletionContainerRef = useRef<HTMLDivElement>(null);
 
@@ -49,7 +52,11 @@ export const CtaButtons: React.FC<TProps> = ({
       { icon: <OpenWithIcon onClick={handleOpenDrawer} />, name: "Open" },
       {
         icon: (
-          <AddComponentBtn sourceCode={sourceCode} onComponent={onComponent} />
+          <AddComponentBtn
+            projectDetail={projectDetail}
+            sourceCode={sourceCode}
+            onComponent={onComponent}
+          />
         ),
         name: "Add Component",
       },
@@ -87,12 +94,18 @@ export const CtaButtons: React.FC<TProps> = ({
             {currentAction?.prompt}
           </Typography>
 
-          <Markdown
-            remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
-            className="whitespace-pre-wrap py-2 px-3 mb-3"
-          >
-            {currentAction?.stream}
-          </Markdown>
+          {currentAction?.stream ? (
+            <Markdown
+              remarkPlugins={[[remarkGfm, { singleTilde: false }]]}
+              className="whitespace-pre-wrap py-2 px-3 mb-3"
+            >
+              {currentAction?.stream}
+            </Markdown>
+          ) : (
+            <Stack>
+              Generating ...
+            </Stack>
+          )}
         </Box>
       );
     }

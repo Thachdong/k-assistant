@@ -50,7 +50,7 @@ export async function getAllProjectAction(): Promise<IActionResponse<Project[] |
   try {
     const projects = await projectRepository.getAll();
 
-    revalidatePath("/project");
+    revalidatePath("/", "layout");
 
     return {
       success: true,
