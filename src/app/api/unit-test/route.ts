@@ -1,3 +1,4 @@
+import { getReadableStream } from "@/utils/api.util";
 import ollama from "ollama";
 
 const systemPrompt = `
@@ -37,14 +38,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const readableStream = new ReadableStream({
-    async pull(controller) {
-      for await (const chunk of stream) {
-        controller.enqueue(new TextEncoder().encode(chunk.response));
-      }
-      controller.close();
-    },
-  });
+  const readableStream = await getReadableStream(stream);
 
   return new Response(readableStream, {
     headers: {
