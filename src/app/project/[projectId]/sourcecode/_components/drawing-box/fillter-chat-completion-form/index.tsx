@@ -5,8 +5,8 @@ import { Box, Stack } from "@mui/material";
 import { ECompletionType } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type TProps = {
   containerWidth: string;
@@ -20,9 +20,13 @@ export type TSearchChatCompletion = {
 export const FillterChatCompletionForm: React.FC<TProps> = ({
   containerWidth,
 }) => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const { control, handleSubmit } = useForm<TSearchChatCompletion>({
+  const type = searchParams.get("type") as ECompletionType | undefined;
+  
+  const searchTerms = searchParams.get("searchTerms") || '';
+
+  const { control, handleSubmit, reset } = useForm<TSearchChatCompletion>({
     defaultValues: {
       type: ECompletionType.ADD_COMPONENT,
       searchTerms: "",
@@ -37,10 +41,22 @@ export const FillterChatCompletionForm: React.FC<TProps> = ({
   ];
 
   const onSubmit = useCallback((data: TSearchChatCompletion) => {
-    const pathname = `${window.location.pathname}?searchTerms=${data.searchTerms || ''}&type=${data.type}`;
+    const params = new URLSearchParams();
 
-    router.push(pathname);
+    params.set("searchTerms", data?.searchTerms || '');
+
+    params.set("type", data.type || '');
+
+    window.history.pushState(null, '', `?${params.toString()}`)
   }, []);
+
+  useEffect(() => {
+    console.log(typeof searchTerms)
+    reset({
+      type: type || undefined,
+      searchTerms,
+    });
+  }, [type, searchTerms]);
 
   return (
     <Box

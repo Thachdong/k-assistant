@@ -19,7 +19,7 @@ export const SourceCode: React.FC = () => {
     if (loading) {
       return <FileContentSkeleton />;
     } else {
-      return <FileContent filePath={filePath} fileContent={fileContent} />;
+      return <FileContent />;
     }
   }, [fileContent, loading, filePath]);
 

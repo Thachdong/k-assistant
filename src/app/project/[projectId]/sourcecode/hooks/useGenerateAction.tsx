@@ -4,6 +4,7 @@ import { useCallback, useContext, useState } from "react";
 import { createChatCompletionAction } from "../sourcecode.action";
 import { TCreateUnitTest } from "../sourcecode.type";
 import { ProjectContext } from "../../_context";
+import { useRouter } from "next/navigation";
 
 type TCurrentAction = {
   prompt: string;
@@ -17,9 +18,17 @@ type TProps = {
 export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
   const { selectedFile } = useContext(ProjectContext);
 
+  const router = useRouter();
+
   const [currentAction, setCurrentAction] = useState<TCurrentAction | null>(
     null
   );
+
+  const navigateAfterCreateSuccess = useCallback((type: ECompletionType) => {
+    const pathname = `${window.location.pathname}?searchTerms=&type=${type}`;
+    
+    router.push(pathname);
+  }, [])
 
   const onRefactor = useCallback(
     async () => {
@@ -60,7 +69,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
 
       const decoder = new TextDecoder();
 
-      let awnser = "Result: ";
+      let awnser = "";
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -90,7 +99,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
         });
       }
     },
-    []
+    [selectedFile]
   );
 
   const onStoryBook = useCallback(
@@ -135,7 +144,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
 
       const decoder = new TextDecoder();
 
-      let awnser = "Result: ";
+      let awnser = "";
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -165,7 +174,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
         });
       }
     },
-    []
+    [selectedFile]
   );
 
   const onUnitTest = useCallback(
@@ -176,7 +185,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
         return;
       }
 
-      const prompt = `Generate unit test for file: $${selectedFile.path}`
+      const prompt = `Generate unit test for file: ${selectedFile.path}`
 
       // 2. OPEN DRAWER
       setCurrentAction({
@@ -205,7 +214,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
 
       const decoder = new TextDecoder();
 
-      let awnser = "Result: ";
+      let awnser = "";
 
       while (true) {
         const { done, value } = await reader!.read();
@@ -213,7 +222,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
         if (done) {
           // 5. TRIGGER CREATE GENERATE ACTION
           const completion: TCreateChatCompletion = {
-            type: ECompletionType.ADD_STORYBOOK,
+            type: ECompletionType.ADD_UNIT_TEST,
             prompt,
             answer: awnser,
             componentName: null,
@@ -223,6 +232,8 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
           await createChatCompletionAction(completion);
 
           setCurrentAction(null);
+
+          navigateAfterCreateSuccess(ECompletionType.ADD_UNIT_TEST)
 
           break;
         }
@@ -235,7 +246,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
         });
       }
     },
-    []
+    [selectedFile]
   );
 
   const onComponent = useCallback(async (data: FormData) => {
@@ -260,7 +271,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
 
     const decoder = new TextDecoder();
 
-    let awnser = "Result: ";
+    let awnser = "";
 
     while (true) {
       const { done, value } = await reader!.read();
@@ -268,7 +279,7 @@ export const useGenerateAction = ({ handleOpenDrawer }: TProps) => {
       if (done) {
         // 5. TRIGGER CREATE GENERATE ACTION
         const completion: TCreateChatCompletion = {
-          type: ECompletionType.REFACTOR_COMPONENT,
+          type: ECompletionType.ADD_COMPONENT,
           prompt,
           answer: awnser,
           componentName: null,

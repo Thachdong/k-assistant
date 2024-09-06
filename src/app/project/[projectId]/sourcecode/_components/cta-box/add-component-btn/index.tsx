@@ -19,12 +19,10 @@ type TProps = {
   onComponent: (data: FormData) => Promise<void>;
 };
 
-export const AddComponentBtn: React.FC<TProps> = ({
-  onComponent,
-}) => {
-  const { project } = useContext(ProjectContext);
+export const AddComponentBtn: React.FC<TProps> = ({ onComponent }) => {
+  const { project, getSelectedFile } = useContext(ProjectContext);
 
-  const { sourceCode = ''} = project || {};
+  const { sourceCode = "" } = project || {};
 
   const { control, handleSubmit } = useForm<TAddComponent>({
     resolver: yupResolver(addComponentSchema),
@@ -38,7 +36,7 @@ export const AddComponentBtn: React.FC<TProps> = ({
   const { file, onFileChange } = useFile();
 
   const onSubmit = useCallback(
-    async(formState: TAddComponent) => {
+    async (formState: TAddComponent) => {
       if (file) {
         const formData = new FormData();
 
@@ -48,7 +46,18 @@ export const AddComponentBtn: React.FC<TProps> = ({
 
         formData.append("content", formState.content);
 
-        formData.append("dependencies", JSON.stringify(formState.dependencies));
+        const fileList = formState?.dependencies || [];
+
+        const dependencies = await Promise.all(
+          fileList.map(async (path) => {
+
+            const content = await getSelectedFile?.(path, false);
+
+            return content;
+          })
+        );
+
+        formData.append("dependencies", JSON.stringify(dependencies));
 
         onComponent(formData);
 
@@ -70,7 +79,7 @@ export const AddComponentBtn: React.FC<TProps> = ({
 
       return components.map((file: any) => ({
         value: file.path,
-        label: file.path.split("/").slice(-1),
+        label: file.path,
       }));
     } catch (error) {
       console.error(error);

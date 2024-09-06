@@ -50,7 +50,7 @@ export const ChatPanel: React.FC<TProps> = ({ chatHistory }) => {
     let awnser = "";
 
     while (true) {
-      const { done, value } = await reader!.read();
+      const { done, value, ...rest } = await reader!.read();
 
       if (done) {
         await addHistory(awnser, ERoles.SYSTEM);

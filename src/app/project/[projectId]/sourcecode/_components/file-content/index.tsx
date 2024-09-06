@@ -1,28 +1,25 @@
 "use client";
 
 import { Stack, Typography } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
+import { ProjectContext } from "../../../_context";
 
-type TProps = {
-  filePath: string;
-  fileContent: string;
-};
+export const FileContent: React.FC = () => {
+  const { selectedFile } = useContext(ProjectContext);
 
-export const FileContent: React.FC<TProps> = ({
-  filePath,
-  fileContent
-}) => {
+  const { path = '', content = '' } = selectedFile || {};
+
   return (
     <Stack className="relative h-full pl-2 py-4">
       <Stack className="sticky bg-white top-0">
-        {filePath && (
+        {path && (
           <Typography className="p-2 border-b font-bold">
-            path: {filePath}
+            path: {path}
           </Typography>
         )}
       </Stack>
 
-      <pre className="whitespace-pre-wrap">{fileContent}</pre>
+      <pre className="whitespace-pre-wrap">{content}</pre>
     </Stack>
   );
 };

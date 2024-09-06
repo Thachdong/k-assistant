@@ -1,19 +1,25 @@
-import { getReadableStream } from "@/utils/api.util";
-import ollama from "ollama";
+import { Ollama, OllamaInput } from "@langchain/ollama";
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const llmConfig: OllamaInput = {
+  model: "llama3.1",
+  temperature: 0,
+  maxRetries: 3,
+};
+const llm = new Ollama(llmConfig);
+
+const prompt = PromptTemplate.fromTemplate("Anwser user {question}:\n");
 
 export async function POST(request: Request) {
   const { question } = await request.json();
 
-  const stream = await ollama.generate({
-    model: "llama3.1",
-    prompt: question,
-    system: "",
-    stream: true
-  })
+  const chain = prompt.pipe(llm);
 
-  const readableStream = await getReadableStream(stream)
+  const stream = await chain.stream({
+    question,
+  });
 
-  return new Response(readableStream, {
+  return new Response(stream, {
     headers: {
       "Content-Type": "pplication/octet-stream",
     },

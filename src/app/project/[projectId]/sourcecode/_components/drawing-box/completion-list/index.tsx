@@ -88,6 +88,7 @@ export const CompletionList: React.FC<TProps> = ({
       const anwserHeight = isCollapse ? "" : "125px";
 
       const controlText = isCollapse ? "Hide Answer" : "Show Answer";
+
       return (
         <Box key={chatCompletion.id} className="border rounded mb-3">
           <Box className="border-b bg-gray-300 p-3">
@@ -152,11 +153,13 @@ export const CompletionList: React.FC<TProps> = ({
     (async() => {
       const result = await getChatCompletionAction(searchTerms, type ?? undefined);
 
+      console.log(result)
+
       if (result.success) [
         setCompletions(result.data as ChatCompletion [])
       ]
     })();
-  }, [])
+  }, [searchTerms, type])
   // #endregion
   return (
     <Drawer

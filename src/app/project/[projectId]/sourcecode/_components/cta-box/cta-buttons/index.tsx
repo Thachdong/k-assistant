@@ -22,8 +22,11 @@ import { AddComponentBtn } from "../add-component-btn";
 import { CompletionList } from "../../drawing-box/completion-list";
 import { UnitTestBtn } from "../unit-test-btn";
 import { TCreateUnitTest } from "../../../sourcecode.type";
+import { useRouter } from "next/navigation";
 
 export const CtaButtons: React.FC = () => {
+  const router = useRouter();
+
   const chatCompletionContainerRef = useRef<HTMLDivElement>(null);
 
   const { handleOpenDrawer, speedDialModal, drawerModal } =
@@ -44,8 +47,11 @@ export const CtaButtons: React.FC = () => {
       {
         icon: (
           <UnitTestBtn
-            onUnitTest={(data: TCreateUnitTest) =>
-              onUnitTest(data)
+            onUnitTest={(data: TCreateUnitTest) => {
+              onUnitTest(data);
+
+              router.refresh();
+            }
             }
           />
         ),
