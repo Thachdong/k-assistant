@@ -1,7 +1,10 @@
 import * as xlsx from "xlsx";
 import fs from "fs";
-import ollama from "ollama";
 import { generateTestcasesPrompts } from "@/prompts/generate-testcases.prompt";
+import { LLMS } from "@/llms";
+import { StructuredOutputParser } from "langchain/output_parsers";
+import { RunnableSequence } from "@langchain/core/runnables";
+import { PromptTemplate } from "@langchain/core/prompts";
 
 const { readFile, set_fs, utils } = xlsx;
 set_fs(fs);
@@ -32,38 +35,37 @@ function writeTestCasesToFile(testCases: any, specs: any): string {
   return filename;
 }
 
-export async function generateTestCasesService(specsPath: string): Promise<string> {
-    const docs = await loadCSV(specsPath);
+const parser = StructuredOutputParser.fromZodSchema(
+  generateTestcasesPrompts.testcasesSchema
+);
 
-    let result: any[] = [];
+const chain = RunnableSequence.from([
+  PromptTemplate.fromTemplate(generateTestcasesPrompts.prompt),
+  LLMS["llama3.1"],
+  parser,
+]);
 
-  for (const doc of docs) {
-    const prompt = generateTestcasesPrompts.userPrompt(doc);
+export async function generateTestCasesService(
+  specsPath: string
+): Promise<string> {
+  const docs = await loadCSV(specsPath);
 
-    const { response } = await ollama.generate({
-      model: "llama3.1",
-      prompt,
-      options: {
-        temperature: 1,
-      },
-      system: generateTestcasesPrompts.systemPrompt(),
-      stream: false,
-    });
+  let result: any[] = [];
 
+  for await (const doc of docs) {
     try {
-      const testCases = JSON.parse(response);
+      const response = await chain.invoke({
+        specs: JSON.stringify(doc),
+        format_instructions: parser.getFormatInstructions(),
+      });
 
-      result = [...result, ...testCases];
-    } catch (error) {
-      console.log(error);
-      
-      result = [...result, {error, data: response}];
+      result = [...result, ...response];
+    } catch (errror) {
+      result = [...result, { errror }];
     }
-
-    break;
   }
 
-  const indexedTestCases = result.map((r, i) => ({no: i + 1, ...r}));
+  const indexedTestCases = result.map((r, i) => ({ no: i + 1, ...r }));
 
   return await writeTestCasesToFile(indexedTestCases, docs);
 }

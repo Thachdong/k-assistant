@@ -1,7 +1,4 @@
-import { generateCodePrompt } from "@/prompts/generate-code.prompt";
-import { getReadableStreamFormChatResponse } from "@/utils/api.util";
-import ollama from "ollama";
-import path from "path";
+import { LLMS } from "@/llms";
 
 const packagejson = {
   name: "codebase",
@@ -77,6 +74,14 @@ const packagejson = {
   },
 };
 
+async function convertBlobToBase64(blob: Blob): Promise<string> {
+  const arrayBuffer = await blob.arrayBuffer();
+
+  const base64String = Buffer.from(arrayBuffer).toString('base64');
+
+  return base64String;
+}
+
 export async function POST(request: Request) {
   const formData = await request.formData();
 
@@ -84,9 +89,7 @@ export async function POST(request: Request) {
     formData.entries()
   );
 
-  const arrayBuffer = await (design as File).arrayBuffer();
-
-  const uint8Array = new Uint8Array(arrayBuffer);
+  const base64File = await convertBlobToBase64(design as Blob);
 
   const initialPrompt = `
     You are an AI coding assistant. Based on the following inputs, generate a Next.js React component:
@@ -97,27 +100,11 @@ export async function POST(request: Request) {
     Ensure the component follows Next.js best practices and is compatible with the provided project setup.
   `;
 
-  const messages = [
-    { role: 'system', content: 'You are an AI that generates Next.js components.' },
-    {
-      role: "user",
-      images: [uint8Array],
-      content: initialPrompt,
-    },
-  ];
+  const stream = await LLMS.llava.bind({
+    images: [base64File]
+  }).stream(initialPrompt)
 
-  const stream = await ollama.chat({
-    model: "llava",
-    messages: messages,
-    stream: true,
-    options: {
-      temperature: 0,
-    },
-  });
-
-  const readableStream = await getReadableStreamFormChatResponse(stream);
-
-  return new Response(readableStream, {
+  return new Response(stream, {
     headers: {
       "Content-Type": "pplication/octet-stream",
     },

@@ -12,7 +12,7 @@ export function testcaseWorker() {
     async (job) => {
       const { testcaseId, filePath } = job.data;
       // 1. update testcase status to processing
-      await testcaseRepository.updateStatu(testcaseId, EStatus.PROCESSING);
+      await testcaseRepository.updateStatus(testcaseId, EStatus.PROCESSING);
 
       // 2. start processing testcase
       console.log("Start processing job:", job.id, job.data);
@@ -31,7 +31,7 @@ export function testcaseWorker() {
     // update testcase status to completed
     const { testcaseId } = job.data;
 
-    await testcaseRepository.updateStatu(testcaseId, EStatus.SUCCESS);
+    await testcaseRepository.updateStatus(testcaseId, EStatus.SUCCESS);
 
     console.log(`Job with id ${job.id} has been completed`);
   });
@@ -40,7 +40,7 @@ export function testcaseWorker() {
     // update testcase status to failed
     const { testcaseId } = job?.data || {};
 
-    await testcaseRepository.updateStatu(testcaseId, EStatus.FAILED);
+    await testcaseRepository.updateStatus(testcaseId, EStatus.FAILED);
     
     console.error(`Job with id ${job?.id} has failed with ${err.message}`);
   });

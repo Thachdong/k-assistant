@@ -22,7 +22,7 @@ async function deleteById(id: string): Promise<void> {
   await prisma.testcase.delete({ where: { id } });
 }
 
-async function updateStatu(id: string, status: EStatus): Promise<void> {
+async function updateStatus(id: string, status: EStatus): Promise<void> {
   await prisma.testcase.update({ where: { id }, data: { status } });
 }
 
@@ -35,6 +35,6 @@ export const testcaseRepository = {
   findMany,
   getById,
   deleteById,
-  updateStatu,
+  updateStatus,
   addFile,
 };

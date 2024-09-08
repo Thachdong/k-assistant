@@ -1,19 +1,12 @@
-import { Ollama, OllamaInput } from "@langchain/ollama";
+import { LLMS } from "@/llms";
 import { PromptTemplate } from "@langchain/core/prompts";
-
-const llmConfig: OllamaInput = {
-  model: "llama3.1",
-  temperature: 0,
-  maxRetries: 3,
-};
-const llm = new Ollama(llmConfig);
 
 const prompt = PromptTemplate.fromTemplate("Anwser user {question}:\n");
 
 export async function POST(request: Request) {
   const { question } = await request.json();
 
-  const chain = prompt.pipe(llm);
+  const chain = prompt.pipe(LLMS['llama3.1']);
 
   const stream = await chain.stream({
     question,
