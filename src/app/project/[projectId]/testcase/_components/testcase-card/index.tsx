@@ -11,6 +11,7 @@ import {
 import { Testcase } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
+import moment from 'moment';
 
 type TProps = {
   testcase: Testcase;
@@ -35,11 +36,11 @@ export const TestcaseCard: React.FC<TProps> = ({ testcase }) => {
 
         <Stack direction="row" spacing={2}>
           <Typography className="text-sm">
-            Created at: {testcase.createdAt.toDateString()}
+            Created at: {moment(testcase.createdAt).format("DD/MM/YYYY HH:mm:ss")}
           </Typography>
 
           <Typography className="text-sm">
-            Updated at: {testcase.updatedAt.toDateString()}
+            Updated at: {moment(testcase.updatedAt).format("DD/MM/YYYY HH:mm:ss")}
           </Typography>
         </Stack>
 

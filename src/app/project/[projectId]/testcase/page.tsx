@@ -10,7 +10,7 @@ export default async function TestcasePage() {
   const testcases = await testcaseRepository.findMany();
 
   return (
-    <Box className="p-3">
+    <Box className="h-full p-3">
       <Stack
         className="mb-3"
         direction="row"
@@ -24,13 +24,15 @@ export default async function TestcasePage() {
         <CreateTestcaseButton specs={specs} />
       </Stack>
 
-      <Grid container>
-        {testcases.map((testcase) => (
-          <Grid key={testcase.id} item xs={12} sm={6} className="p-4">
-            <TestcaseCard testcase={testcase} />
-          </Grid>
-        ))}
-      </Grid>
+      <Box className="h-full overflow-y-auto pb-16">
+        <Grid container>
+          {testcases.map((testcase) => (
+            <Grid key={testcase.id} item xs={12} sm={6} className="p-4">
+              <TestcaseCard testcase={testcase} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
     </Box>
   );
 }

@@ -22,20 +22,11 @@ import { AddComponentBtn } from "../add-component-btn";
 import { CompletionList } from "../../drawing-box/completion-list";
 import { UnitTestBtn } from "../unit-test-btn";
 import { TCreateUnitTest } from "../../../sourcecode.type";
+import { useRouter } from "next/navigation";
 
-type TProps = {
-  filePath: string;
-  fileContent: string;
-  chatCompletions: ChatCompletion[];
-  sourceCode: string;
-};
+export const CtaButtons: React.FC = () => {
+  const router = useRouter();
 
-export const CtaButtons: React.FC<TProps> = ({
-  filePath,
-  fileContent,
-  chatCompletions,
-  sourceCode,
-}) => {
   const chatCompletionContainerRef = useRef<HTMLDivElement>(null);
 
   const { handleOpenDrawer, speedDialModal, drawerModal } =
@@ -49,30 +40,33 @@ export const CtaButtons: React.FC<TProps> = ({
       { icon: <OpenWithIcon onClick={handleOpenDrawer} />, name: "Open" },
       {
         icon: (
-          <AddComponentBtn sourceCode={sourceCode} onComponent={onComponent} />
+          <AddComponentBtn onComponent={onComponent} />
         ),
         name: "Add Component",
       },
       {
         icon: (
           <UnitTestBtn
-            onUnitTest={(data: TCreateUnitTest) =>
-              onUnitTest(filePath, fileContent, data)
+            onUnitTest={(data: TCreateUnitTest) => {
+              onUnitTest(data);
+
+              router.refresh();
+            }
             }
           />
         ),
         name: "Unit Test",
       },
       {
-        icon: <UpdateIcon onClick={() => onRefactor(filePath, fileContent)} />,
+        icon: <UpdateIcon onClick={onRefactor} />,
         name: "Refactor",
       },
       {
-        icon: <StyleIcon onClick={() => onStoryBook(filePath, fileContent)} />,
+        icon: <StyleIcon onClick={onStoryBook} />,
         name: "StoryBook",
       },
     ],
-    [onRefactor, filePath, fileContent, onStoryBook]
+    [onRefactor, onStoryBook]
   );
 
   const currentActionBox = useMemo(() => {
@@ -120,7 +114,6 @@ export const CtaButtons: React.FC<TProps> = ({
       </Box>
 
       <CompletionList
-        chatCompletions={chatCompletions}
         drawerModal={drawerModal}
         chatCompletionContainerRef={chatCompletionContainerRef}
       >

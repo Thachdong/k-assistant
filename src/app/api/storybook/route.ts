@@ -1,23 +1,17 @@
+import { LLMS } from "@/llms";
 import { generateStorybookPrompt } from "@/prompts/generate-storybook.prompt";
-import { getReadableStream } from "@/utils/api.util";
-import ollama from "ollama";
 
 export async function POST(request: Request) {
   const { prompt } = await request.json();
 
-  const stream = await ollama.generate({
-    model: "llama3.1",
-    prompt: generateStorybookPrompt.userPrompt(prompt),
-    system: generateStorybookPrompt.systemPrompt(),
-    stream: true,
-    options: {
-      temperature: 0,
-    },
-  });
+  const prompts = [
+    generateStorybookPrompt.systemPrompt(),
+    generateStorybookPrompt.userPrompt(prompt)
+  ]
 
-  const readableStream = await getReadableStream(stream);
+  const stream = await LLMS['llama3.1'].stream(prompts)
 
-  return new Response(readableStream, {
+  return new Response(stream, {
     headers: {
       "Content-Type": "pplication/octet-stream",
     },
